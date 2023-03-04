@@ -2,6 +2,7 @@ import React from 'react';
 import MovieList from './MovieList.jsx'
 import Search from './Search.jsx'
 import AddMovie from './AddMovie.jsx'
+const axios = require('axios');
 
 
 const App = (props) => {
@@ -10,6 +11,14 @@ const App = (props) => {
   const [search, setSearch] = React.useState('');
   const [movieTitle, setMovieTitle] = React.useState('');
 
+  React.useEffect(() => {
+    axios.get('/movies')
+      .then((response) => {
+        console.log('response data: ', response.data)
+        setList(response.data);
+        setRenderList(response.data);
+      })
+  })
 
 
   const handleSubmit = (event) => {
@@ -34,7 +43,6 @@ const App = (props) => {
   const handleChange = (event) => {
     event.preventDefault();
     setSearch(event.target.value);
-    console.log('search field input: ', event.target.value)
   };
 
   const handleMovieName = (event) => {
@@ -48,7 +56,7 @@ const App = (props) => {
     if (movieTitle !== '') {
       var movieObject = {
       'title': movieTitle,
-      'status': false,
+      'watched': 0,
       };
 
       var newList = [...list, movieObject]; //[1, 2, 3, movieObject]
@@ -64,7 +72,7 @@ const App = (props) => {
   const renderWatched = (event) => {
     event.preventDefault();
     var copy = Array.from(list);
-    var notWatched = copy.filter(movie => movie.status === true);
+    var notWatched = copy.filter(movie => movie.watched === 1);
     setRenderList(notWatched)
 
   };
@@ -74,7 +82,7 @@ const App = (props) => {
     //create a copy of the full list
     var copy = Array.from(list);
     //create a new array by filtering for each movie that has a status of false;
-    var notWatched = copy.filter(movie => movie.status === false);
+    var notWatched = copy.filter(movie => movie.watched === 0);
     setRenderList(notWatched)
     //set
     // setRenderList(moviesToWatch);
